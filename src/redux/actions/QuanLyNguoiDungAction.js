@@ -1,5 +1,5 @@
 
-import { DANG_NHAP_ACTION, SET_THONG_TIN_NGUOI_DUNG } from "./types/QuanLyNguoiDungType";
+import { DANG_KY_ACTION, DANG_NHAP_ACTION, SET_THONG_TIN_NGUOI_DUNG } from "./types/QuanLyNguoiDungType";
 import { history } from '../../App'
 import { quanLyNguoiDungService } from './../../Service/QuanLyNguoiDung';
 
@@ -33,6 +33,33 @@ export const dangNhapAction = (thongTinDangNhap) => {
     }
 
 }
+export const dangKyAction = (thongTinDangKy) => {
+    return async (dispatch) => {
+
+        try {
+            const result = await quanLyNguoiDungService.dangKy(thongTinDangKy);
+
+
+            if (result.data.statusCode === 200) {
+                dispatch({
+                    type: DANG_KY_ACTION,
+                    thongTinDangKy: result.data.content
+                });
+                //Chuyển hướng đăng nhập về trang trước đó
+                history.goBack();
+            }
+
+            console.log('Đăng ký thành công', result);
+            alert("Đăng ký thành công!");
+
+        } catch (error) {
+            console.log('Đăng ký thất bại', error.response.data);
+            alert("Đăng ký thất bại!");
+
+        }
+
+    }
+}
 
 
 export const layThongTinNguoiDungAction = (thongTinDangNhap) => {
@@ -50,13 +77,13 @@ export const layThongTinNguoiDungAction = (thongTinDangNhap) => {
                     type: SET_THONG_TIN_NGUOI_DUNG,
                     thongTinNguoiDung: result.data.content
                 });
-               
+
             }
 
-            console.log('result', result);
+            console.log('SET_THONG_TIN_NGUOI_DUNG', result);
 
         } catch (error) {
-            console.log('error', error.response.data);
+            console.log('SET_THONG_TIN_NGUOI_DUNG', error.response.data);
         }
 
     }

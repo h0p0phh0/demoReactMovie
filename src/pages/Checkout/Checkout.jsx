@@ -22,7 +22,7 @@ function Checkout(props) {
         dispatch(action)
     }, [])
     console.log({ chiTietPhongVe })
-
+    console.log({userLogin})
     const { thongTinPhim, danhSachGhe } = chiTietPhongVe;
 
     const renderSeats = () => {
@@ -41,6 +41,7 @@ function Checkout(props) {
             if (indexGheDD != -1) {
                 classGheDaDat = 'gheDangDat';
             }
+            
             return (
                 <Fragment key={index}>
                     {/* {ghe.loaiGhe === 'Vip' ? <button className={`${style['ghe']} ${style['gheVip']}`} >{ghe.stt}</button> : <button className={`${style['ghe']}`} key={index}>{ghe.stt}</button>} */}
@@ -142,7 +143,7 @@ function Checkout(props) {
                     <hr />
                     <div className="my-5 font-bold text-lg">
                         <i>Phone</i> <br />
-                        {userLogin.soDT}
+                        {userLogin.soDt}
                     </div>
                     <hr />
                     <div className="mb-0 h-full mt-5" style={{ marginBottom: 0 }}>
@@ -193,12 +194,13 @@ function KetQuaDatVe(props) {
     const dispatch = useDispatch();
     const {thongTinNguoiDung} = useSelector(state=>state.QuanLyNguoiDungReducer)
     const { userLogin } = useSelector(state => state.QuanLyNguoiDungReducer);
-    console.log('thongTinNguoiDung',thongTinNguoiDung)
 
     useEffect(()=>{
-        const action = layThongTinNguoiDungAction()
+        const action = layThongTinNguoiDungAction();
         dispatch(action)
     },[])
+    console.log('thongTinNguoiDung',thongTinNguoiDung)
+
     return (
         <section className="text-gray-600 body-font">
             <div className="container px-5 py-24 mx-auto">

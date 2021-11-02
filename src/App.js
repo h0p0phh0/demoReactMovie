@@ -26,7 +26,7 @@ function App() {
         <HomeTemplate path="/detail/:id" exact Component={Detail} />
 
         <CheckoutTemplate path="/checkout/:id" exact Component={Checkout}/>
-        <Route path="/register" exact Component={Register} />
+        <UserTemplate path="/register" exact Component={Register} />
         {/* <Route path="/login" exact Component={Login} /> */}
         <UserTemplate path="/login" exact Component={Login}/>
         {/* <Suspense fallback={<h1>Loading...</h1>}>

@@ -14,7 +14,7 @@ export const layDanhSachHeThongRapAction = () => {
                 })
             }
         } catch (errors) {
-            console.log('errors', errors.response.data)
+            console.log('errors', errors.response?.data)
         }
     }
 }
@@ -30,7 +30,7 @@ export const layThongTinChiTietPhim = (id) => {
                 filmDetail: result.data.content
             })
         }catch (errors) {
-            console.log('errors', errors.response.data)
+            console.log('errors', errors.response?.data)
         }
     }
 }

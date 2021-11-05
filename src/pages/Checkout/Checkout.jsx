@@ -1,28 +1,65 @@
 import React, { useEffect } from 'react'
 import style from './Checkout.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { datVeAction, layChiTietPhongVeAction } from './../../redux/actions/QuanLyDatVeAction';
-import { Fragment } from 'react';
+import { datVeAction, layChiTietPhongVeAction, datGheAction } from './../../redux/actions/QuanLyDatVeAction';
+import { Fragment, useState } from 'react';
 import './Checkout.css';
-import { StarOutlined, CheckOutlined, UserOutlined } from '@ant-design/icons';
-import { DAT_VE } from '../../redux/actions/types/QuanLyDatVeType';
+import { CheckOutlined, CloseOutlined, UserOutlined, SmileOutlined, HomeOutlined } from '@ant-design/icons';
+import { CHUYEN_TAB, DAT_GHE, DAT_VE } from '../../redux/actions/types/QuanLyDatVeType';
 import _ from 'lodash';
 import { ThongTinDatVe } from './../../_core/models/ThongTinDatVe';
 import { Tabs } from 'antd';
 import { layThongTinNguoiDungAction } from '../../redux/actions/QuanLyNguoiDungAction';
+import moment from 'moment';
+import { CHANGE_TAB_ACTIVE } from './../../redux/actions/types/QuanLyDatVeType';
+import { connection } from '../../index';
 
 
 function Checkout(props) {
     const { userLogin } = useSelector(state => state.QuanLyNguoiDungReducer);
-    const { chiTietPhongVe, danhSachGheDangDat } = useSelector(state => state.QuanLyDatVeReducer);
+    const { chiTietPhongVe, danhSachGheDangDat, danhSachGheKhachDat } = useSelector(state => state.QuanLyDatVeReducer);
     const dispatch = useDispatch();
-    console.log({ danhSachGheDangDat });
+
+    // console.log({ danhSachGheDangDat });
     useEffect(() => {
         const action = layChiTietPhongVeAction(props.match.params.id);
         dispatch(action)
+        // khi co client thuc hien dat ve thanh cong load lai trang
+        connection.on('datVeThangCong',()=>{
+            dispatch(action);
+        })
+        //vua vao trang load tat ca ghe dang dat
+        connection.invoke('loadDanhSachGhe',props.match.params.id)
+        // load danh sach ghe dang dat signalR
+        connection.on("loadDanhSachGheDaDat", (dsGheKhachDat) => {
+            console.log('danhSachGheKhachDat', dsGheKhachDat);
+            //buoc1: loai minh ra khoi danh sach
+            dsGheKhachDat = dsGheKhachDat.filter(item => item.taiKhoan !== userLogin.taiKhoan)
+            //buoc 2: gop danh sach khach dat thanh mot mang chung
+            let arrGheKhachDat = dsGheKhachDat.reduce((result, item, index) => {
+                let arrGhe = JSON.parse(item.danhSachGhe);
+                return [...result, ...arrGhe];
+            }, []);
+            //loai bo phan tu trung nhau trong mang, va cap nhat redux
+            dispatch({
+                type: DAT_GHE,
+                arrGheKhachDat
+            })
+            arrGheKhachDat = _.uniqBy(arrGheKhachDat, 'maGhe');
+            // console.log({arrGheKhacDat})
+        })
+        //cai dat su k ien khi reload trang (nen tach ham ra de tranh goi lai ham khi qua lai trang) function(event){}
+        window.addEventListener("beforeunload",clearGhe );
+        return () =>{
+            clearGhe();
+            window.removeEventListener('beforeunload',clearGhe)
+        }
     }, [])
-    console.log({ chiTietPhongVe })
-    console.log({userLogin})
+    const clearGhe = function(event){
+        connection.invoke('huyDat',userLogin.taiKhoan.match.params.id)
+    }
+    // console.log({ chiTietPhongVe })
+    // console.log({ userLogin })
     const { thongTinPhim, danhSachGhe } = chiTietPhongVe;
 
     const renderSeats = () => {
@@ -34,6 +71,12 @@ function Checkout(props) {
             let classGheDangDat = '';
             // kiem tra tung ghe co dang dat hay khong
             let indexGheDD = danhSachGheDangDat.findIndex(gheDD => gheDD.maGhe === ghe.maGhe);
+            // kiem tra tung ghe xem khach co dat khong
+            let classGheKhachDat = '';
+            let indexGheKD = danhSachGheKhachDat.findIndex(gheKD => gheKD.maGhe === ghe.maGhe);
+            if (indexGheKD !== -1) {
+                classGheKhachDat = 'gheKhachDat'
+            }
             let classGheDaDuocDat = '';
             if (userLogin.taiKhoan === ghe.taiKhoanNguoiDat) {
                 classGheDaDuocDat = 'gheDaDuocDat';
@@ -41,18 +84,19 @@ function Checkout(props) {
             if (indexGheDD != -1) {
                 classGheDaDat = 'gheDangDat';
             }
-            
+
+
             return (
                 <Fragment key={index}>
                     {/* {ghe.loaiGhe === 'Vip' ? <button className={`${style['ghe']} ${style['gheVip']}`} >{ghe.stt}</button> : <button className={`${style['ghe']}`} key={index}>{ghe.stt}</button>} */}
                     <button onClick={() => {
-                        dispatch({
-                            type: DAT_VE,
-                            gheDuocChon: ghe,
-                        })
-                    }} disabled={ghe.daDat} className={`ghe ${classGheVip} ${classGheDaDat} ${classGheDangDat} ${classGheDaDuocDat}`} >
+                        const action = datGheAction(ghe, props.match.params.id)
+                        dispatch(action)
 
-                        {ghe.daDat ? <UserOutlined style={{ fontWeight: 'bold', fontSize: 19 }} /> : ghe.stt}
+                    }} disabled={ghe.daDat || classGheKhachDat !== ''} className={`ghe ${classGheVip} ${classGheDaDat} ${classGheDangDat} ${classGheDaDuocDat} ${classGheKhachDat}`} >
+
+                        {/* {ghe.daDat ? <UserOutlined style={{ fontWeight: 'bold', fontSize: 19 }} /> : ghe.stt} */}
+                        {ghe.daDat ? classGheDaDuocDat != '' ? <UserOutlined style={{ marginBottom: 7.5, fontWeight: 'bold' }} /> : <CloseOutlined style={{ marginBottom: 7.5, fontWeight: 'bold' }} /> : classGheKhachDat !== '' ? <SmileOutlined style={{ marginBottom: 7.5, fontWeight: 'bold' }} /> : ghe.stt}
 
                     </button>
                     {(index + 1) % 16 === 0 ? <br /> : ''}
@@ -61,7 +105,7 @@ function Checkout(props) {
             )
         })
     }
-    console.log(renderSeats.ghe)
+    // console.log(renderSeats.ghe)
     return (
         <div className="min-h-screen mt-5">
             <div className="grid grid-cols-12">
@@ -82,10 +126,11 @@ function Checkout(props) {
                             <thead className="bg-gray-50 p-5">
                                 <tr>
                                     <th>Ghế chưa đặt</th>
-                                    <th>Ghế đang dặt</th>
+                                    <th>Ghế bạn đang dặt</th>
                                     <th>Ghế vip</th>
                                     <th>Ghế đã được đặt</th>
                                     <th>Ghế bạn đã đặt</th>
+                                    <th>Ghế đang được đặt</th>
 
                                 </tr>
                             </thead>
@@ -97,6 +142,8 @@ function Checkout(props) {
 
                                     <td><button className="ghe gheDaDat text-center"><CheckOutlined /></button></td>
                                     <td><button className="ghe gheDaDuocDat text-center"><CheckOutlined /></button></td>
+                                    <td><button className="ghe gheKhachDat text-center"><CheckOutlined /></button></td>
+
                                 </tr>
                             </tbody>
                         </table>
@@ -169,17 +216,26 @@ const { TabPane } = Tabs;
 
 
 function callback(key) {
+
     console.log(key);
 }
 
-export default function (props) {
+export default function CheckoutTab(props) {
+    const { tabActive } = useSelector(state => state.QuanLyDatVeReducer)
+    const dispatch = useDispatch();
+    // console.log('tabActive',tabActive)
     return (
         <div className="p-5">
-            <Tabs defaultActiveKey="1" onChange={callback}>
-                <TabPane tab="01 Chọn ghế & thanh toán" key="1">
+            <Tabs defaultActiveKey="1" activeKey={tabActive.toString()} onChange={(key) => {
+                dispatch({
+                    type: CHANGE_TAB_ACTIVE,
+                    number: key
+                })
+            }}>
+                <TabPane tab="01 Chọn ghế & thanh toán" key="1" >
                     <Checkout {...props} />
                 </TabPane>
-                <TabPane tab="02 Kết quả đặt vé" key="2">
+                <TabPane tab="02 Kết quả đặt vé" key="2" >
                     <KetQuaDatVe {...props} />
                 </TabPane>
 
@@ -192,14 +248,35 @@ export default function (props) {
 
 function KetQuaDatVe(props) {
     const dispatch = useDispatch();
-    const {thongTinNguoiDung} = useSelector(state=>state.QuanLyNguoiDungReducer)
+    const { thongTinNguoiDung } = useSelector(state => state.QuanLyNguoiDungReducer)
     const { userLogin } = useSelector(state => state.QuanLyNguoiDungReducer);
 
-    useEffect(()=>{
+    useEffect(() => {
         const action = layThongTinNguoiDungAction();
         dispatch(action)
-    },[])
-    console.log('thongTinNguoiDung',thongTinNguoiDung)
+    }, [])
+    console.log('thongTinNguoiDung', thongTinNguoiDung)
+    const renderTicketItem = function () {
+        return thongTinNguoiDung.thongTinDatVe?.map((ticket, index) => {
+            const seats = _.first(ticket.danhSachGhe);
+            return (
+                <div className="p-2 lg:w-1/3 md:w-1/2 w-full" key={index}>
+                    <div className="h-full flex items-center border-gray-200 border p-4 rounded-lg">
+                        <img alt="team" className="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://picsum.photos/80/80" />
+                        <div className="flex-grow">
+                            <h2 className="text-gray-900 title-font font-medium">{ticket.tenPhim}</h2>
+                            <p className="text-gray-500">
+                                <span className="font-bold">Giờ chiếu:</span> {moment(ticket.ngayDat).format('hh:mm A')} - <span className="font-bold">Ngày chiếu:</span>  {moment(ticket.ngayDat).format('DD-MM-YYYY')}
+                            </p>
+                            <p>
+                                <span className="font-bold">Tên rạp:</span>  {seats.tenCumRap} - <span className="font-bold">Ghế:</span>  {ticket.danhSachGhe.map((ghe, index) => { return <span className="text-green-500 text-xl" key={index}> [ {ghe.tenGhe} ] </span> })}
+                            </p>
+                        </div>
+                    </div>
+                </div >
+            )
+        })
+    }
 
     return (
         <section className="text-gray-600 body-font">
@@ -209,87 +286,8 @@ function KetQuaDatVe(props) {
                     <p className="lg:w-2/3 mx-auto leading-relaxed text-base">Đừng nhầm thời gian và địa điểm, để không bỏ lỡ những bộ phim hay bạn nhé</p>
                 </div>
                 <div className="flex flex-wrap -m-2">
-                    <div className="p-2 lg:w-1/3 md:w-1/2 w-full">
-                        <div className="h-full flex items-center border-gray-200 border p-4 rounded-lg">
-                            <img alt="team" className="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://picsum.photos/80/80" />
-                            <div className="flex-grow">
-                                <h2 className="text-gray-900 title-font font-medium">lat mat</h2>
-                                <p className="text-gray-500">10:20 rap 5, he thong rap</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-2 lg:w-1/3 md:w-1/2 w-full">
-                        <div className="h-full flex items-center border-gray-200 border p-4 rounded-lg">
-                            <img alt="team" className="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://dummyimage.com/84x84" />
-                            <div className="flex-grow">
-                                <h2 className="text-gray-900 title-font font-medium">Henry Letham</h2>
-                                <p className="text-gray-500">CTO</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-2 lg:w-1/3 md:w-1/2 w-full">
-                        <div className="h-full flex items-center border-gray-200 border p-4 rounded-lg">
-                            <img alt="team" className="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://dummyimage.com/88x88" />
-                            <div className="flex-grow">
-                                <h2 className="text-gray-900 title-font font-medium">Oskar Blinde</h2>
-                                <p className="text-gray-500">Founder</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-2 lg:w-1/3 md:w-1/2 w-full">
-                        <div className="h-full flex items-center border-gray-200 border p-4 rounded-lg">
-                            <img alt="team" className="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://dummyimage.com/90x90" />
-                            <div className="flex-grow">
-                                <h2 className="text-gray-900 title-font font-medium">John Doe</h2>
-                                <p className="text-gray-500">DevOps</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-2 lg:w-1/3 md:w-1/2 w-full">
-                        <div className="h-full flex items-center border-gray-200 border p-4 rounded-lg">
-                            <img alt="team" className="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://dummyimage.com/94x94" />
-                            <div className="flex-grow">
-                                <h2 className="text-gray-900 title-font font-medium">Martin Eden</h2>
-                                <p className="text-gray-500">Software Engineer</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-2 lg:w-1/3 md:w-1/2 w-full">
-                        <div className="h-full flex items-center border-gray-200 border p-4 rounded-lg">
-                            <img alt="team" className="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://dummyimage.com/98x98" />
-                            <div className="flex-grow">
-                                <h2 className="text-gray-900 title-font font-medium">Boris Kitua</h2>
-                                <p className="text-gray-500">UX Researcher</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-2 lg:w-1/3 md:w-1/2 w-full">
-                        <div className="h-full flex items-center border-gray-200 border p-4 rounded-lg">
-                            <img alt="team" className="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://dummyimage.com/100x90" />
-                            <div className="flex-grow">
-                                <h2 className="text-gray-900 title-font font-medium">Atticus Finch</h2>
-                                <p className="text-gray-500">QA Engineer</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-2 lg:w-1/3 md:w-1/2 w-full">
-                        <div className="h-full flex items-center border-gray-200 border p-4 rounded-lg">
-                            <img alt="team" className="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://dummyimage.com/104x94" />
-                            <div className="flex-grow">
-                                <h2 className="text-gray-900 title-font font-medium">Alper Kamu</h2>
-                                <p className="text-gray-500">System</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-2 lg:w-1/3 md:w-1/2 w-full">
-                        <div className="h-full flex items-center border-gray-200 border p-4 rounded-lg">
-                            <img alt="team" className="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://dummyimage.com/108x98" />
-                            <div className="flex-grow">
-                                <h2 className="text-gray-900 title-font font-medium">Rodrigo Monchi</h2>
-                                <p className="text-gray-500">Product Manager</p>
-                            </div>
-                        </div>
-                    </div>
+                    {renderTicketItem()}
+
                 </div>
             </div>
         </section>

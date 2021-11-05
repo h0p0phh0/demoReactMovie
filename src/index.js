@@ -9,15 +9,24 @@ import '@fortawesome/fontawesome-free/js/all.js';
 import "antd/dist/antd.css"
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
+//signalR
+import * as signalR from '@aspnet/signalr'
+import { DOMAIN } from './util/settings/config';
 
 
-ReactDOM.render(
-  <Provider store={store}>
+export const connection = new signalR.HubConnectionBuilder().withUrl(`${DOMAIN}/DatVeHub`).configureLogging(signalR.LogLevel.Information).build();
 
-    <App />
-  </Provider>
-  , document.getElementById('root')
-);
+connection.start().then(() => {
+  ReactDOM.render(
+    <Provider store={store}>
+      <App />
+    </Provider>
+    ,
+    document.getElementById('root')
+  );
+}).catch(errors => {
+  console.log(errors);
+})
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

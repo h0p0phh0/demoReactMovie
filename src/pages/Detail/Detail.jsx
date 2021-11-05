@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Button, CustomCard } from '@tsamantanis/react-glassmorphism'
 import '@tsamantanis/react-glassmorphism/dist/index.css'
 import '../../assets/styles/circle.scss'
@@ -17,9 +17,9 @@ export default function Detail(props) {
     const filmDetail = useSelector(state => state.QuanLyPhimReducer.filmDetail);
     console.log({ filmDetail })
     const dispatch = useDispatch();
-    useLayoutEffect(() => {
+    useEffect(() => {
         let { id } = props.match.params;
-        console.log(id)
+        // console.log({id})
         dispatch(layThongTinChiTietPhim(id))
     }, [])
     return (
@@ -68,7 +68,8 @@ export default function Detail(props) {
                                                     <div className="text-center ml-2">
                                                         {htr.tenHeThongRap}
                                                     </div>
-                                                </div>} key={index}>
+                                                </div>}
+                                                key={index}>
                                                 {/* hien thi cum rap chieu */}
 
                                                 {htr.cumRapChieu?.map((cumRap, index) => {
@@ -84,7 +85,7 @@ export default function Detail(props) {
                                                             <div className="thong-tin-lich-chieu grid grid-cols-4">
                                                                 {cumRap.lichChieuPhim?.slice(0, 8).map((lichChieu, index) => {
                                                                     return (
-                                                                        <NavLink to={`/checkout/${lichChieu.maLichChieu}`} className="col-span-1 text-green-800 font-bold" key={index}>
+                                                                        <NavLink to={`/checkout/${lichChieu.maLichChieu}`} key={index} className="col-span-1 text-green-800 font-bold">
                                                                             {moment(lichChieu.ngayChieuGioChieu).format('hh:mm A')}
                                                                         </NavLink>
                                                                     )
@@ -104,7 +105,7 @@ export default function Detail(props) {
                             Chưa có thông tin
                         </TabPane>
                         <TabPane tab="Đánh giá" key="3" style={{ minHeight: 300 }} className="p-10">
-                           Chưa có đánh giá nào
+                            Chưa có đánh giá nào
                         </TabPane>
                     </Tabs>
                 </div>

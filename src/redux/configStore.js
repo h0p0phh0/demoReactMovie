@@ -5,6 +5,7 @@ import { QuanLyPhimReducer } from './reducer/QuanLyPhimReducer';
 import { QuanLyRapReducer } from './reducer/QuanLyRapReducer';
 import { QuanLyNguoiDungReducer } from './reducer/QuanLyNguoiDungReducer';
 import { QuanLyDatVeReducer } from './reducer/QuanLyDatVeReducer';
+import { LoadingReducer } from './reducer/LoadingReducer';
 const rootReducer = combineReducers({
     //state app
     CarouselReducer,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
     QuanLyRapReducer,
     QuanLyNguoiDungReducer,
     QuanLyDatVeReducer,
+    LoadingReducer
 
 })
 export const store = createStore(rootReducer, applyMiddleware(thunk));

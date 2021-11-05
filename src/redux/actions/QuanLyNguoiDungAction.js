@@ -21,13 +21,15 @@ export const dangNhapAction = (thongTinDangNhap) => {
                     thongTinDangNhap: result.data.content
                 });
                 //Chuyển hướng đăng nhập về trang trước đó
-                history.goBack();
+                history.push("/");
             }
 
             console.log('result', result);
+            alert("Đăng nhập thành thành công!");
 
         } catch (error) {
             console.log('error', error.response.data);
+            alert("Đăng nhập thất bại!");
         }
 
     }
@@ -46,7 +48,7 @@ export const dangKyAction = (thongTinDangKy) => {
                     thongTinDangKy: result.data.content
                 });
                 //Chuyển hướng đăng nhập về trang trước đó
-                history.goBack();
+                history.push("/");
             }
 
             console.log('Đăng ký thành công', result);

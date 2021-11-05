@@ -23,3 +23,8 @@
     box-shadow: -1px 2px  18px -6px #000;
     color: #000;
   }
+  .gheKhachDat {
+    background-color: rgb(11, 238, 215)!important;
+    cursor:no-drop;
+
+  }

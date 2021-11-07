@@ -13,6 +13,10 @@ import { layThongTinNguoiDungAction } from '../../redux/actions/QuanLyNguoiDungA
 import moment from 'moment';
 import { CHANGE_TAB_ACTIVE } from './../../redux/actions/types/QuanLyDatVeType';
 import { connection } from '../../index';
+import { QuanLyNguoiDungReducer } from './../../redux/reducer/QuanLyNguoiDungReducer';
+import { history } from '../../App';
+import { TOKEN, USER_LOGIN } from '../../util/settings/config';
+import { NavLink } from 'react-router-dom';
 
 
 function Checkout(props) {
@@ -25,11 +29,11 @@ function Checkout(props) {
         const action = layChiTietPhongVeAction(props.match.params.id);
         dispatch(action)
         // khi co client thuc hien dat ve thanh cong load lai trang
-        connection.on('datVeThangCong',()=>{
+        connection.on('datVeThangCong', () => {
             dispatch(action);
         })
         //vua vao trang load tat ca ghe dang dat
-        connection.invoke('loadDanhSachGhe',props.match.params.id)
+        connection.invoke('loadDanhSachGhe', props.match.params.id)
         // load danh sach ghe dang dat signalR
         connection.on("loadDanhSachGheDaDat", (dsGheKhachDat) => {
             console.log('danhSachGheKhachDat', dsGheKhachDat);
@@ -49,14 +53,14 @@ function Checkout(props) {
             // console.log({arrGheKhacDat})
         })
         //cai dat su k ien khi reload trang (nen tach ham ra de tranh goi lai ham khi qua lai trang) function(event){}
-        window.addEventListener("beforeunload",clearGhe );
-        return () =>{
+        window.addEventListener("beforeunload", clearGhe);
+        return () => {
             clearGhe();
-            window.removeEventListener('beforeunload',clearGhe)
+            window.removeEventListener('beforeunload', clearGhe)
         }
     }, [])
-    const clearGhe = function(event){
-        connection.invoke('huyDat',userLogin.taiKhoan.match.params.id)
+    const clearGhe = function (event) {
+        // connection.invoke('huyDat',userLogin.taiKhoan.match.params.id)
     }
     // console.log({ chiTietPhongVe })
     // console.log({ userLogin })
@@ -223,10 +227,35 @@ function callback(key) {
 export default function CheckoutTab(props) {
     const { tabActive } = useSelector(state => state.QuanLyDatVeReducer)
     const dispatch = useDispatch();
+    const { userLogin } = useSelector(state => state.QuanLyNguoiDungReducer)
+    //tao su kien vao unmount khong tra ve key  3
+    useEffect(()=>{
+        return ()=>(
+            dispatch({
+                type: CHANGE_TAB_ACTIVE,
+                number: "1"
+            })
+        )
+    })
     // console.log('tabActive',tabActive)
+    const operations = (
+        <Fragment>
+            {!_.isEmpty(userLogin) ? <Fragment> <button onClick={() => {
+                history.push('/profile')
+            }}> <div style={{ width: 50, height: 50, display: 'flex', justifyContent: 'center', alignItems: 'center' }} className="text-2xl ml-5 rounded-full bg-red-200">{userLogin.taiKhoan.substr(0, 1)}</div>Hello ! {userLogin.taiKhoan}</button> <button onClick={() => {
+                localStorage.removeItem(USER_LOGIN);
+                localStorage.removeItem(TOKEN);
+                history.push('/home');
+                //de refesh lai reducer
+                window.location.reload();
+            }} className="text-blue-800">Đăng xuất</button> </Fragment> : ''}
+
+        </Fragment>
+    )
+
     return (
         <div className="p-5">
-            <Tabs defaultActiveKey="1" activeKey={tabActive.toString()} onChange={(key) => {
+            <Tabs tabBarExtraContent={operations} defaultActiveKey="1" activeKey={tabActive.toString()} onChange={(key) => {
                 dispatch({
                     type: CHANGE_TAB_ACTIVE,
                     number: key
@@ -238,7 +267,9 @@ export default function CheckoutTab(props) {
                 <TabPane tab="02 Kết quả đặt vé" key="2" >
                     <KetQuaDatVe {...props} />
                 </TabPane>
+                <TabPane tab={<div className="text-center" style={{display:'flex', justifyContent:'center',alignItems:'center'}}><NavLink to="/"><HomeOutlined style={{marginLeft:10,fontSize:25}} /></NavLink></div>} key="3">
 
+                </TabPane>
             </Tabs>
         </div>
     )

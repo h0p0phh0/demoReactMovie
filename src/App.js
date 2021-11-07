@@ -14,6 +14,7 @@ import { Suspense, lazy } from 'react'
 // const CheckoutTemplateLazy = lazy(() => import("./templates/CheckoutTemplate/CheckoutTemplate"))
 import { UserTemplate } from './templates/UserTemplate/UserTemplate';
 import Loading from "./components/Loading/Loading";
+import Profile from './pages/Profile/Profile';
 
 export const history = createBrowserHistory();
 
@@ -26,8 +27,10 @@ function App() {
         <HomeTemplate path="/news" exact Component={News} />
         <HomeTemplate path="/contact" exact Component={Contact} />
         <HomeTemplate path="/detail/:id" exact Component={Detail} />
+        <HomeTemplate path="/profile" exact Component={Profile} />
 
         <CheckoutTemplate path="/checkout/:id" exact Component={Checkout}/>
+        
         <UserTemplate path="/register" exact Component={Register} />
         {/* <Route path="/login" exact Component={Login} /> */}
         <UserTemplate path="/login" exact Component={Login}/>

@@ -12,6 +12,7 @@ import "slick-carousel/slick/slick-theme.css";
 //signalR
 import * as signalR from '@aspnet/signalr'
 import { DOMAIN } from './util/settings/config';
+import './i18n';
 
 
 export const connection = new signalR.HubConnectionBuilder().withUrl(`${DOMAIN}/DatVeHub`).configureLogging(signalR.LogLevel.Information).build();

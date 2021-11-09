@@ -15,6 +15,11 @@ import { Suspense, lazy } from 'react'
 import { UserTemplate } from './templates/UserTemplate/UserTemplate';
 import Loading from "./components/Loading/Loading";
 import Profile from './pages/Profile/Profile';
+import AdminTemplate from "./templates/AdminTemplate/AdminTemplate";
+import Dashboard from './pages/Admin/Dasboard/Dashboard';
+import Films from './pages/Admin/Films/Films';
+import AddFilm from './pages/Admin/Films/AddFilm/AddFilm';
+import Edit from './pages/Admin/Films/Edit/Edit';
 
 export const history = createBrowserHistory();
 
@@ -32,11 +37,14 @@ function App() {
         <CheckoutTemplate path="/checkout/:id" exact Component={Checkout}/>
         
         <UserTemplate path="/register" exact Component={Register} />
-        {/* <Route path="/login" exact Component={Login} /> */}
         <UserTemplate path="/login" exact Component={Login}/>
-        {/* <Suspense fallback={<h1>Loading...</h1>}>
-          <CheckoutTemplateLazy path="/checkout/:id" exact Component={Checkout} />
-        </Suspense> */}
+
+        <AdminTemplate path="/admin" exact Component={Dashboard}/>
+        <AdminTemplate path="/admin/films" exact Component={Films}/>
+        <AdminTemplate path="/admin/films/addfilm" exact Component={AddFilm}/>
+        <AdminTemplate path="/admin/films/edit/:id" exact Component={Edit}/>
+        <AdminTemplate path="/admin/users" exact Component={Dashboard} />
+        
 
         <HomeTemplate path="/" exact Component={Home} />
       </Switch>

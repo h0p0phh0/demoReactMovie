@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react'
 import { Button, Table, } from 'antd';
 import { Input, Space } from 'antd';
-import { AudioOutlined, EditOutlined, DeleteOutlined, } from '@ant-design/icons';
+import { AudioOutlined, EditOutlined, DeleteOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { QuanLyPhimReducer } from './../../../redux/reducer/QuanLyPhimReducer';
 import { useEffect } from 'react';
-import { layDanhSachPhimAction } from './../../../redux/actions/QuanLyPhimAction';
+import { layDanhSachPhimAction, xoaPhimAction } from './../../../redux/actions/QuanLyPhimAction';
 import { NavLink } from 'react-router-dom';
 import { history } from '../../../App';
 
@@ -73,12 +73,24 @@ export default function Films() {
         },
         {
             title: 'Hành Động',
-            dataIndex: 'hanhDong',
+            dataIndex: 'maphim',
 
             render: (text, film) => {
                 return (<Fragment >
-                    <NavLink key={1} className="text-4xl mr-10 hover:text-red-700 flex-auto" to={`/admin/films/edit/${film.maPhim}`}><EditOutlined /></NavLink>
-                    <NavLink key={2} className="text-4xl hover:text-red-700 flex-auto" to="/"><DeleteOutlined /></NavLink>
+                    <NavLink key={1} className="text-4xl hover:text-red-700 flex-auto color" to={`/admin/films/edit/${film.maPhim}`}><EditOutlined /></NavLink>
+                    <span key={2} className="text-4xl hover:text-red-700 flex-auto mx-10 text-blue-500" style={{ cursor: 'pointer' }} onClick={() => {
+                        // goi action xoa 
+                        if (window.confirm('Bạn có chắc muốn xóa phim không ' + film.tenPhim)) {
+                            // goi action
+                            dispatch(xoaPhimAction(film.maPhim))
+                        }
+                    }}><DeleteOutlined />
+                    </span>
+                    <NavLink key={3} className="text-4xl hover:text-red-700 flex-auto" to={`/admin/films/showtime/${film.maPhim}/${film.tenPhim}`} onClick={()=>{
+                        localStorage.setItem('filmParams',JSON.stringify(film))
+                    }}>
+                        <CalendarOutlined />
+                    </NavLink>
                 </Fragment>)
             },
             sortDirections: ['descend', 'ascend'],
@@ -93,11 +105,15 @@ export default function Films() {
     }
 
     const { Search } = Input;
-    const onSearch = value => console.log(value);
+    const onSearch = value => {
+        console.log(value);
+        // goi api lay danh sach phim
+        dispatch(layDanhSachPhimAction(value));
+    };
     return (
         <div className="p-5">
             <h1 className="text-3xl">Quản lý phim</h1>
-            <Button className="mb-5" onClick={()=>{
+            <Button className="mb-5" onClick={() => {
                 history.push('/admin/films/addfilm')
             }}>Thêm Phim</Button>
             <Search
@@ -108,7 +124,7 @@ export default function Films() {
                 onSearch={onSearch}
             />
 
-            <Table columns={columns} dataSource={data} onChange={onChange} />
+            <Table columns={columns} dataSource={data} onChange={onChange} rowKey={"maPhim"} />
 
         </div>
     )

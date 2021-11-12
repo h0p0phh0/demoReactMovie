@@ -86,11 +86,11 @@ export default function Films() {
                         }
                     }}><DeleteOutlined />
                     </span>
-                    <NavLink key={3} className="text-4xl hover:text-red-700 flex-auto" to={`/admin/films/showtime/${film.maPhim}/${film.tenPhim}`} onClick={()=>{
+                    {/* <NavLink key={3} className="text-4xl hover:text-red-700 flex-auto" to={`/admin/films/showtime/${film.maPhim}/${film.tenPhim}`} onClick={()=>{
                         localStorage.setItem('filmParams',JSON.stringify(film))
                     }}>
                         <CalendarOutlined />
-                    </NavLink>
+                    </NavLink> */}
                 </Fragment>)
             },
             sortDirections: ['descend', 'ascend'],

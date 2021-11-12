@@ -1,0 +1,21 @@
+.footer {
+  background-color: #222;
+  color: #949494;
+}
+.footer a {
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 12px !important;
+  font-weight: 700;
+  color: #949494;
+  transition: all 0.2s;
+  line-height: 2.3;
+  
+}
+.logoPartner img {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  background-color: #fff;
+}

@@ -39,7 +39,7 @@ export default function HomeCarousel(props) {
         })
     }
     return (
-        <Carousel effect="fade" style={{width:'100%',padding:0,margin:'0px'}}>
+        <Carousel effect="fade" style={{width:'100%',padding:0,marginTop:'4rem'}}>
             {renderImg()}
         </Carousel>
 

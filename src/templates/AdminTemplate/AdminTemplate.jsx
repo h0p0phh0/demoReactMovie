@@ -62,7 +62,7 @@ const AdminTemplate = (props) => {
                 <Layout style={{ minHeight: '100vh' }}>
                     <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
                         <div className="logo p-5" >
-                            <img src={Logo} alt="..." style={{marginLeft:'25px'}}/>
+                            <img src={Logo} alt="..." style={{ marginLeft: '25px' }} />
                         </div>
                         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
                             <Menu.Item key="1" icon={<UserOutlined />}>
@@ -79,22 +79,11 @@ const AdminTemplate = (props) => {
 
                                 </Menu.Item>
                             </SubMenu>
-                            <Menu.Item key="3" icon={<DesktopOutlined />}>
+                            {/* <Menu.Item key="3" icon={<DesktopOutlined />}>
                                 <NavLink to="/admin/showtimes">Showtime</NavLink>
 
-                            </Menu.Item>
-                            {/* <SubMenu key="sub1" icon={<UserOutlined />} title="User">
-                                <Menu.Item key="3">Tom</Menu.Item>
-                                <Menu.Item key="4">Bill</Menu.Item>
-                                <Menu.Item key="5">Alex</Menu.Item>
-                            </SubMenu>
-                            <SubMenu key="sub2" icon={<TeamOutlined />} title="Team">
-                                <Menu.Item key="6">Team 1</Menu.Item>
-                                <Menu.Item key="8">Team 2</Menu.Item>
-                            </SubMenu>
-                            <Menu.Item key="9" icon={<FileOutlined />}>
-                                Files
                             </Menu.Item> */}
+
                         </Menu>
                     </Sider>
                     <Layout className="site-layout">

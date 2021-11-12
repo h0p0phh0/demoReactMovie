@@ -1,7 +1,9 @@
 
-import { DANG_KY_ACTION, DANG_NHAP_ACTION, SET_THONG_TIN_NGUOI_DUNG } from "./types/QuanLyNguoiDungType";
+import { DANG_KY_ACTION, DANG_NHAP_ACTION, LAY_DANH_SACH_NGUOI_DUNG, OPEN_ADMIN_MODAL, SET_THONG_TIN_NGUOI_DUNG, THEM_NGUOI_DUNG } from "./types/QuanLyNguoiDungType";
 import { history } from '../../App'
-import { quanLyNguoiDungService } from './../../Service/QuanLyNguoiDung';
+import { quanLyNguoiDungService } from "../../Service/QuanLyNguoiDungService";
+import {message} from "antd";
+
 
 
 
@@ -90,4 +92,43 @@ export const layThongTinNguoiDungAction = (thongTinDangNhap) => {
 
     }
 
+}
+export const layDanhSachNguoiDungAction = (searchValue) => {
+    return async (dispatch) => {
+        try {
+            const result = await quanLyNguoiDungService.layDanhSachNguoiDung(searchValue);
+
+
+            if (result.data.statusCode === 200) {
+                dispatch({
+                    type: LAY_DANH_SACH_NGUOI_DUNG,
+                    danhSachNguoiDung: result.data.content
+                });
+
+            }
+
+            console.log('layDanhSachNguoiDungAction', result);
+
+        } catch (error) {
+            console.log('layDanhSachNguoiDungAction', error.response.data);
+        }
+    }
+}
+export const OpenAdminModalAction = (componentType, user = {}) => {
+    return (dispatch) => {
+        dispatch({type: OPEN_ADMIN_MODAL, componentType, user});
+    };
+};
+export const themNguoiDungAction = (user) => {
+    return (dispatch) => {
+        let promise = quanLyNguoiDungService.themNguoiDung(user);
+        promise.then((res) => {
+            dispatch({type: THEM_NGUOI_DUNG, user})
+            message.success('Thêm người dùng thành công!');
+        })
+        promise.catch((err) => {
+            console.log(err.response?.data)
+            message.error('Thêm người dùng thất bại!');
+        })
+    }
 }

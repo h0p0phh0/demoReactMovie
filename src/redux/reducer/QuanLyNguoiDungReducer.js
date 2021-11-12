@@ -1,5 +1,5 @@
 import { TOKEN, USER_LOGIN } from '../../util/settings/config';
-import { DANG_KY_ACTION, DANG_NHAP_ACTION, SET_THONG_TIN_NGUOI_DUNG } from './../actions/types/QuanLyNguoiDungType';
+import { DANG_KY_ACTION, DANG_NHAP_ACTION, LAY_DANH_SACH_NGUOI_DUNG, OPEN_ADMIN_MODAL, SET_THONG_TIN_NGUOI_DUNG, THEM_NGUOI_DUNG } from './../actions/types/QuanLyNguoiDungType';
 
 
 // kiem tra store
@@ -12,7 +12,8 @@ if (localStorage.getItem(USER_LOGIN)) {
 
 const stateDefault = {
     userLogin: user,
-    thongTinNguoiDung: {}
+    thongTinNguoiDung: {},
+    danhSachNguoiDung: [],
 }
 export const QuanLyNguoiDungReducer = (state = stateDefault, action) => {
     switch (action.type) {
@@ -32,6 +33,18 @@ export const QuanLyNguoiDungReducer = (state = stateDefault, action) => {
             state.thongTinNguoiDung = action.thongTinNguoiDung;
             return { ...state }
 
+        }
+        case LAY_DANH_SACH_NGUOI_DUNG: {
+            state.danhSachNguoiDung = action.danhSachNguoiDung;
+            return {...state}
+        }
+        case THEM_NGUOI_DUNG: {
+            state.danhSachNguoiDung.push(action.user);
+            return {...state}
+        }
+        case OPEN_ADMIN_MODAL: {
+            state.userChoice = action.user;
+            return {...state}
         }
         default:
             return { ...state }

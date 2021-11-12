@@ -54,20 +54,25 @@ export default function Header() {
     }
 
     return (
-        <header header className="p-4 dark:bg-coolGray-800 dark:text-coolGray-100 bg-white bg-opacity-25 text-black fixed w-full z-10">
-            <div className="container flex justify-between h-16 mx-auto">
+        <header className="p-4  bg-white bg-opacity-95 text-black fixed w-full z-10 h-16 top-0">
+            <div className="container flex justify-between h-full mx-auto">
                 <NavLink to="/" aria-label="Back to homepage" className="flex items-center p-2">
-                    <img src={Logo} alt="cybersoft" className="w-50" />
+                    <img src={Logo} alt="cybersoft" className="w-1/2" />
                 </NavLink>
-                <ul className="items-stretch hidden space-x-3 lg:flex">
+                <ul className="items-stretch hidden space-x-3 lg:flex mb-0" >
                     <li className="flex">
-                        <NavLink to="/home" className="flex items-center px-4 -mb-1 border-b-2 dark:border-transparent dark:text-violet-400 dark:border-violet-400 capitalize" activeClassName="border-b-1 border-black">{t('home')}</NavLink>
+                        <NavLink to="/home" className="header-text flex items-center px-4 dark:border-transparent dark:text-violet-400 dark:border-violet-400 capitalize hover:text-red-500 text-gray-900 leading-16"
+                         activeClassName="text-red-500">{t('home')}
+                         </NavLink>
                     </li>
                     <li className="flex">
-                        <NavLink to="/news" className="flex items-center px-4 -mb-1 border-b-2 dark:border-transparent capitalize" activeClassName="border-b-1 border-black">{t('news')}</NavLink>
+                        <NavLink to="/news" className="header-text flex items-center px-4 dark:border-transparent capitalize hover:text-red-500 text-gray-900" activeClassName=" text-red-500">{t('news')}
+                        </NavLink>
                     </li>
                     <li className="flex">
-                        <NavLink to="/contact" className="flex items-center px-4 -mb-1 border-b-2 dark:border-transparent capitalize" activeClassName="border-b-1 border-black">{t('contact')}</NavLink>
+                        <NavLink to="/contact" className="header-text flex items-center px-4 dark:border-transparent capitalize hover:text-red-500 text-gray-900" 
+                        activeClassName="text-red-500">{t('contact')}
+                        </NavLink>
                     </li>
 
                 </ul>
@@ -84,7 +89,7 @@ export default function Header() {
                     </Select>
 
                 </div>
-                <div button className="p-4 lg:hidden">
+                <div className="p-4 lg:hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6 dark:text-coolGray-100">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>

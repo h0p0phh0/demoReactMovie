@@ -73,11 +73,11 @@ export default class HomeMenu extends React.PureComponent {
 
     return (
 
-      <>
+      <Fragment className="container m-auto">
         <Tabs tabPosition={tabPosition}>
           {this.renderHeThongRap()}
         </Tabs>
-      </>
+      </Fragment>
     )
   }
 }
